@@ -48,7 +48,12 @@ func main() {
 			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
-		result := executeRemoteFunction(path, fn, postData)
+		result, err := executeRemoteFunction(path, fn, postData)
+		if err != nil {
+			log.Printf("Error executing function: %v", err)
+			return c.Status(500).SendString(fmt.Sprintf("Error executing function: %v", err))
+		}
+
 		c.Set("Content-Type", "application/json")
 		return c.Send(result)
 	})
