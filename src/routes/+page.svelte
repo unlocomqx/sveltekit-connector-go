@@ -1,19 +1,22 @@
 <script lang="ts">
 	// still can't get .d.ts to work
-	import { queryTodos } from './todos.remote.go';
+	import { formUpdateTodo, queryTodos } from './todos.remote.go';
 
-	let todos = $state([]);
-	$inspect(todos);
+	let todos = $state(await queryTodos());
 </script>
 
 <h1>SvelteKit Connector for Go</h1>
 <p>Connect your SvelteKit frontend to Go backend easily using this library.</p>
 
-<button onclick={async () => (todos = await queryTodos())}> Fetch todos </button>
+<button onclick={async () => (todos = await queryTodos())}> Fetch todos</button>
 
 <div>
-	<h2>Todos</h2>
+	<h2>Todos list:</h2>
 	{#each todos as { id, title } (id)}
-		<p>{title}</p>
+		<form {...formUpdateTodo}>
+			<input name="" type="text" value={title}>
+			<button type="submit">Update</button>
+		</form>
+		<br>
 	{/each}
 </div>

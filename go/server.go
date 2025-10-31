@@ -19,10 +19,10 @@ func main() {
 		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
-	app.Static("/", "./frontend/build")
+	// app.Static("/", "./frontend/build")
 	app.Get("/", func(c *fiber.Ctx) error {
 		// Get raw body from POST request:
-		return c.SendString("OK2") // []byte("user=john")
+		return c.SendString("OK") // []byte("user=john")
 	})
 	app.Post("/", func(c *fiber.Ctx) error {
 		// Get raw body from POST request:

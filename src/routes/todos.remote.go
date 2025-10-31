@@ -32,3 +32,14 @@ func formCreateTodo(title string) Todo {
 	todos = append(todos, newTodo)
 	return newTodo
 }
+
+func formUpdateTodo(id int, title string) Todo {
+	for i := range todos {
+		if todos[i].ID == id {
+			todos[i].Title = title
+			return todos[i]
+		}
+	}
+
+	return Todo{}
+}
