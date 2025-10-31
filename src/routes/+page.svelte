@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { queryTodos } from './todos.remote.go';
 
 	let todos = $state([]);
