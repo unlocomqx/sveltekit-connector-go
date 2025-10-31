@@ -5,6 +5,9 @@ import path from 'node:path';
 import * as fs from 'node:fs';
 import { imports, queryFn } from './templates.js';
 
+const parser = new Parser();
+parser.setLanguage(goLang);
+
 /**
  * @typedef {Object} RemoteFunction
  * @property {string} name - The name of the remote function
@@ -17,6 +20,42 @@ import { imports, queryFn } from './templates.js';
  * @property {Object} [headers] - Custom headers to send with requests
  * @property {number} [timeout] - Request timeout in milliseconds
  */
+
+/**
+ * Parses Go code to extract remote function declarations and emits corresponding JavaScript code
+ * @param {string} code - The Go source code to parse
+ * @param {string} file_path - The absolute path to the Go file
+ * @param {import('vite').ResolvedConfig} config - The resolved Vite configuration
+ * @param {GoKitOptions} options - Configuration options for the Go connector
+ */
+function transform_code(code, file_path, config, options) {
+	const tree = parser.parse(code);
+
+	/** @type {RemoteFunction[]} */
+	const remote_functions = [];
+	for (const node of tree.rootNode.children) {
+		if (node.type === 'function_declaration') {
+			// Find the function name node (usually the second child after 'function' keyword)
+			const function_name_node = node.children.find((child) => child.type === 'identifier');
+			const name = function_name_node ? function_name_node.text : 'unknown';
+			if (name) {
+				let type = '';
+				if (name.startsWith('query')) type = 'query';
+				else if (name.startsWith('form')) type = 'form';
+				else if (name.startsWith('command')) type = 'command';
+
+				if (type) {
+					remote_functions.push({
+						name,
+						type
+					});
+				}
+			}
+		}
+	}
+
+	emit_remote_functions({ root: config.root, file_path, remote_functions, options });
+}
 
 /**
  * Emits or processes remote functions found in a Go file
@@ -54,9 +93,6 @@ function emit_remote_functions({ root, file_path, remote_functions, options }) {
 export const gokit = function (options = {}) {
 	const module_regex = /\.remote\.go$/;
 
-	const parser = new Parser();
-	parser.setLanguage(goLang);
-
 	return {
 		name: 'vite-plugin-gokit',
 
@@ -65,46 +101,14 @@ export const gokit = function (options = {}) {
 			remote_go_files.forEach((file) => {
 				const file_path = path.join(config.root, file);
 				const go_code = fs.readFileSync(file_path, 'utf-8');
-				const tree = parser.parse(go_code);
-
-				/** @type {RemoteFunction[]} */
-				const remote_functions = [];
-				for (const node of tree.rootNode.children) {
-					console.log(node.type);
-					if (node.type === 'function_declaration') {
-						// Find the function name node (usually the second child after 'function' keyword)
-						const function_name_node = node.children.find((child) => child.type === 'identifier');
-						const name = function_name_node ? function_name_node.text : 'unknown';
-						if (name) {
-							let type = '';
-							if (name.startsWith('query')) type = 'query';
-							else if (name.startsWith('form')) type = 'form';
-							else if (name.startsWith('command')) type = 'command';
-
-							if (type) {
-								remote_functions.push({
-									name,
-									type
-								});
-							}
-						}
-					}
-				}
-
-				emit_remote_functions({ root: config.root, file_path, remote_functions, options });
+				transform_code(go_code, file_path, config, options);
 			});
-		},
-
-		resolveId(id) {
-			// console.log({ id });
 		},
 
 		transform(src, id) {
 			if (module_regex.test(id)) {
 				console.log({ id, src });
 			}
-		},
-
-		configureServer(server) {}
+		}
 	};
 };
