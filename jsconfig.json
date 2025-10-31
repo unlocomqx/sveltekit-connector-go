@@ -9,9 +9,7 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"moduleResolution": "bundler",
-		"typeRoots": ["dist/src/routes/"],
-		"types": ["dist/src/routes/todos.remote.d.ts"]
+		"moduleResolution": "bundler"
 	},
 	"include": ["dist/src/routes/**/*.remote.d.ts"]
 }
