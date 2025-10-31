@@ -52,8 +52,7 @@ function emit_remote_functions({ root, file_path, remote_functions, options }) {
  * @returns {import('vite').Plugin} Vite plugin instance
  */
 export const gokit = function (options = {}) {
-	const virtualModuleId = 'virtual:go';
-	const resolvedVirtualModuleId = '\0' + virtualModuleId;
+	const module_regex = /\.remote\.go$/;
 
 	const parser = new Parser();
 	parser.setLanguage(goLang);
@@ -97,15 +96,12 @@ export const gokit = function (options = {}) {
 		},
 
 		resolveId(id) {
-			if (id === virtualModuleId) {
-				return resolvedVirtualModuleId;
-			}
+			// console.log({ id });
 		},
 
-		load(id) {
-			if (id === resolvedVirtualModuleId) {
-				console.log({ id });
-				return `export const remoteFunctions = ${JSON.stringify(remote_functions)}`;
+		transform(src, id) {
+			if (module_regex.test(id)) {
+				console.log({ id, src });
 			}
 		},
 
