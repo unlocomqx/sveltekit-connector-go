@@ -67,8 +67,10 @@ function transform_code(code, file_path, config, options) {
  */
 function emit_remote_functions({ config, file_path, remote_functions, options }) {
 	console.log(`Remote functions in ${file_path}:`, remote_functions);
-	const base_path = path.join(path.dirname(file_path), path.basename(file_path, '.go'));
-	const js_path = base_path + '.js';
+	const js_path = path.join(
+		config.build.outDir,
+		path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.js')
+	);
 	const dts_path = path.join(
 		config.build.outDir,
 		path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.d.ts')

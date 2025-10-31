@@ -11,5 +11,5 @@
 		"strict": true,
 		"moduleResolution": "bundler"
 	},
-	"include": ["dist/src/routes/**/*.remote.d.ts"]
+	"include": ["dist/src/**/*.d.ts"]
 }
