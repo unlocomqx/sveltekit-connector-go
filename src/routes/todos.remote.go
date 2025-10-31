@@ -11,7 +11,7 @@ var todos = []Todo{
 	{ID: 3, Title: "Todo 3"},
 }
 
-func queryTodos() []Todo {
+func queryTodos(postData []byte) []Todo {
 	return todos
 }
 
