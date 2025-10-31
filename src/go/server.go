@@ -36,15 +36,18 @@ func main() {
 		}
 
 		if !strings.HasSuffix(path, ".remote.go") {
+			log.Printf("Invalid file type")
 			return c.Status(400).SendString("Invalid file type")
 		}
 
 		if fn == "" {
+			log.Printf("Function name (fn) is required")
 			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
 		result, err := executeRemoteFunction(path, fn, postData)
 		if err != nil {
+			log.Printf("Error executing function: %v", err)
 			return c.Status(500).SendString(fmt.Sprintf("Error executing function: %v", err))
 		}
 

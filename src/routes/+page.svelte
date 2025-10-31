@@ -2,7 +2,7 @@
 	// still can't get .d.ts to work
 	import { formCreateTodo, queryTodos } from './todos.remote.go';
 
-	let todos = $state(await queryTodos());
+	let todos = $state([]);
 </script>
 
 <h1>SvelteKit Connector for Go</h1>
