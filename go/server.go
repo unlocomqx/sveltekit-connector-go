@@ -1,4 +1,4 @@
-package main
+x package main
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -20,5 +20,15 @@ func main() {
 		// Get raw body from POST request:
 		return c.Send(c.BodyRaw()) // []byte("user=john")
 	})
+
+	app.Get("/rpc", func(c *fiber.Ctx) error {
+		// Get raw body from POST request:
+		return c.SendString("OK") // []byte("user=john")
+	})
+	app.Post("/rpc", func(c *fiber.Ctx) error {
+		// Get raw body from POST request:
+		return c.SendString("OK") // []byte("user=john")
+	})
+
 	app.Listen(":9999")
 }
