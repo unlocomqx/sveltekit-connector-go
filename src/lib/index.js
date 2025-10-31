@@ -100,7 +100,7 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 		}
 		if (remote_fn.type === 'form') {
 			return formFn
-				.replace('_name_', remote_fn.name)
+				.replace(/_name_/g, remote_fn.name)
 				.replace('_endpoint_', options.endpoint.replace(/\/$/, '') || '')
 				.replace('_path_', relative_path);
 		}

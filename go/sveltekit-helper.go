@@ -30,10 +30,9 @@ func main() {
 	result := %s()
 	jsonData, err := json.Marshal(result)
 	if err != nil {
-		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Println(string(jsonData))
+	fmt.Print(string(jsonData))
 }
 `, contentStr, functionName)
 

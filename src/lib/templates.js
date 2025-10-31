@@ -11,7 +11,7 @@ export const _name_ = query(() =>{
 `;
 
 export const formFn = `export const _name_ = form((data) =>{
-	return fetch('_endpoint_/_path_', {
+	return fetch('_endpoint_/_path_?fn=_name_', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export const formFn = `export const _name_ = form((data) =>{
 `;
 
 export const commandFn = `export const _name_ = command((data) =>{
-	return fetch('_endpoint_/_path_', {
+	return fetch('_endpoint_/_path_?fn=_name_', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
