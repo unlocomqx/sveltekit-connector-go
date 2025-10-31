@@ -24,3 +24,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 src/go/tmp
+src/go/rpc
