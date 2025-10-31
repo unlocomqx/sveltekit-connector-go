@@ -31,3 +31,4 @@ This is a POC, feel free to contribute to make it better.
 - [ ] Fix types for "virtual" js module
 - [ ] Improve Go server structure
 - [ ] Improve error handling
+- [ ] Reload Vite server when a go file is changed
