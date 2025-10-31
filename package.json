@@ -2,7 +2,7 @@
 	"name": "sveltekit-connector-php",
 	"version": "0.0.1",
 	"scripts": {
-		"go": "cd go && air -c .air.toml",
+		"go": "cd src/go && air -c .air.toml",
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
 		"preview": "vite preview",

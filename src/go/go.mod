@@ -1,4 +1,4 @@
-module gokit/plugin
+module gokit/rpc
 
 go 1.25.3
 
