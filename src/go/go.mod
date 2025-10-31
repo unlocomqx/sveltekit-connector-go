@@ -3,6 +3,7 @@ module gokit/rpc
 go 1.25.3
 
 require (
+	routes v0.0.0 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/gofiber/fiber/v2 v2.52.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect

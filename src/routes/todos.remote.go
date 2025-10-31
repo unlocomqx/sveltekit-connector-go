@@ -1,4 +1,4 @@
-package main
+package routes
 
 type Todo struct {
 	ID    int    `json:"id"`
