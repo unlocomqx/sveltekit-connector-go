@@ -3,7 +3,7 @@ import Parser from 'tree-sitter';
 import goLang from 'tree-sitter-go';
 import path from 'node:path';
 import * as fs from 'node:fs';
-import { imports, queryFn } from './templates.js';
+import { imports, queryFn, dtsQueryFn, dtsFormFn, dtsCommandFn } from './templates.js';
 
 const parser = new Parser();
 parser.setLanguage(goLang);
@@ -54,22 +54,26 @@ function transform_code(code, file_path, config, options) {
 		}
 	}
 
-	emit_remote_functions({ root: config.root, file_path, remote_functions, options });
+	emit_remote_functions({ config, file_path, remote_functions, options });
 }
 
 /**
  * Emits or processes remote functions found in a Go file
  * @param {Object} params - The parameters object
- * @param {string} params.root - The root directory path
+ * @param {import('vite').ResolvedConfig} params.config - The resolved Vite configuration
  * @param {string} params.file_path - The absolute path to the Go file containing remote functions
  * @param {RemoteFunction[]} params.remote_functions - Array of remote function objects
  * @param {GoKitOptions} params.options - Configuration options for the Go connector
  */
-function emit_remote_functions({ root, file_path, remote_functions, options }) {
+function emit_remote_functions({ config, file_path, remote_functions, options }) {
 	console.log(`Remote functions in ${file_path}:`, remote_functions);
-	const js_path = path.join(path.dirname(file_path), path.basename(file_path, '.go') + '.js');
+	const base_path = path.join(path.dirname(file_path), path.basename(file_path, '.go'));
+	const js_path = base_path + '.js';
+	const dts_path = path.join(config.build.outDir, path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.d.ts'));
+	fs.mkdirSync(path.dirname(dts_path), { recursive: true });
+
 	const js_code = remote_functions.map((remote_fn) => {
-		const relative_path = path.relative(root, file_path);
+		const relative_path = path.relative(config.root, file_path);
 		if (remote_fn.type === 'query') {
 			return queryFn
 				.replace('_name_', remote_fn.name)
@@ -79,10 +83,28 @@ function emit_remote_functions({ root, file_path, remote_functions, options }) {
 		return '';
 	});
 
+	const dts_code = remote_functions.map((remote_fn) => {
+		if (remote_fn.type === 'query') {
+			return dtsQueryFn.replace('_name_', remote_fn.name);
+		} else if (remote_fn.type === 'form') {
+			return dtsFormFn.replace('_name_', remote_fn.name);
+		} else if (remote_fn.type === 'command') {
+			return dtsCommandFn.replace('_name_', remote_fn.name);
+		}
+		return '';
+	});
+
 	const imports_list = new Set(remote_functions.map((fn) => fn.type));
+
 	const imports_code = imports.replace('_imports_', Array.from(imports_list).join(', '));
 	const js_code_with_imports = [imports_code, ...js_code].join('\n');
 	fs.writeFileSync(js_path, js_code_with_imports);
+
+	const dts_module = `declare module '${file_path}' {
+		${imports_code}
+		${dts_code.map(line => '\t' + line).join('\n')}
+	}`;
+	fs.writeFileSync(dts_path, dts_module);
 }
 
 /**
@@ -107,7 +129,7 @@ export const gokit = function (options = {}) {
 
 		transform(src, id) {
 			if (module_regex.test(id)) {
-				console.log({ id, src });
+				//
 			}
 		}
 	};

@@ -11,3 +11,10 @@ declare global {
 }
 
 export {};
+
+declare module '*.remote.go' {
+	import { form, query } from '$app/server';
+	export const queryTodos: query<any>;
+	export const queryTodoByID: query<any>;
+	export const formCreateTodo: form<any>;
+}

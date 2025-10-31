@@ -1,9 +1,7 @@
-<script>
+<script lang="ts">
 	import { queryTodos } from './todos.remote.go';
 
 	let todos = $state([]);
-
-	$inspect(todos);
 </script>
 
 <h1>SvelteKit Connector for Go</h1>
