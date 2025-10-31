@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -17,6 +17,50 @@ type Todo struct {
 	ID        int    `json:"id"`
 	Title     string `json:"title"`
 	Completed bool   `json:"completed"`
+}
+
+func executeRemoteFunction(filePath string, functionName string) ([]byte, error) {
+	fileContent, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	contentStr := string(fileContent)
+	contentStr = strings.Replace(contentStr, "package main", "", 1)
+
+	wrapperCode := fmt.Sprintf(`package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+%s
+
+func main() {
+	result := %s()
+	jsonData, err := json.Marshal(result)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println(string(jsonData))
+}
+`, contentStr, functionName)
+
+	wrapperPath := filepath.Join("tmp", "wrapper.go")
+	err = os.WriteFile(wrapperPath, []byte(wrapperCode), 0644)
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := exec.Command("go", "run", wrapperPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("execution error: %s", string(output))
+	}
+
+	return []byte(strings.TrimSpace(string(output))), nil
 }
 
 func main() {
@@ -54,18 +98,18 @@ func main() {
 		}
 		fmt.Println("File exists:", fullPath)
 
-		todos := []Todo{
-			{ID: 1, Title: "Buy groceries", Completed: false},
-			{ID: 2, Title: "Walk the dog", Completed: true},
-			{ID: 3, Title: "Finish project", Completed: false},
+		if fn == "" {
+			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
-		jsonData, err := json.Marshal(todos)
+		result, err := executeRemoteFunction(fullPath, fn)
 		if err != nil {
-			return c.Status(500).SendString("Error encoding JSON")
+			fmt.Println("Error executing function:", err)
+			return c.Status(500).SendString(fmt.Sprintf("Error executing function: %v", err))
 		}
+
 		c.Set("Content-Type", "application/json")
-		return c.Send(jsonData)
+		return c.Send(result)
 	})
 	app.Post("/rpc/*", func(c *fiber.Ctx) error {
 		// Get raw body from POST request:
