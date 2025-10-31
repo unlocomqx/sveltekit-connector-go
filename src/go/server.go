@@ -3,15 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
-
-const BASE_PATH = "../"
 
 func main() {
 	fmt.Println("Starting server...")
@@ -33,7 +29,6 @@ func main() {
 	app.All("/rpc/*", func(c *fiber.Ctx) error {
 		path := c.Params("*")
 		fn := c.Query("fn")
-		fullPath := filepath.Join(BASE_PATH, path)
 
 		var postData []byte
 		if c.Method() == "POST" {
@@ -44,17 +39,11 @@ func main() {
 			return c.Status(400).SendString("Invalid file type")
 		}
 
-		fmt.Println(fullPath)
-
-		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-			return c.Status(404).SendString("File not found")
-		}
-
 		if fn == "" {
 			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
-		result, err := executeRemoteFunction(fullPath, fn, postData)
+		result, err := executeRemoteFunction(path, fn, postData)
 		if err != nil {
 			return c.Status(500).SendString(fmt.Sprintf("Error executing function: %v", err))
 		}

@@ -8,10 +8,11 @@ import (
 	"gokit/routes"
 )
 
-func executeRemoteFunction(filePath string, functionName string, postData []byte) ([]byte, error) {
-	fn, exists := routes.FunctionRegistry[functionName]
+func executeRemoteFunction(path string, functionName string, postData []byte) ([]byte, error) {
+	registryKey := path + ":" + functionName
+	fn, exists := routes.FunctionRegistry[registryKey]
 	if !exists {
-		return nil, fmt.Errorf("function %s not found in registry", functionName)
+		return nil, fmt.Errorf("function %s not found in registry", registryKey)
 	}
 
 	fnValue := reflect.ValueOf(fn)
