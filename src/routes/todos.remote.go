@@ -11,11 +11,11 @@ var todos = []Todo{
 	{ID: 3, Title: "Todo 3"},
 }
 
-func queryTodos(postData map[string]any) (any, error) {
+func QueryTodos(postData map[string]any) (any, error) {
 	return todos, nil
 }
 
-func formCreateTodo(postData map[string]any) (any, error) {
+func FormCreateTodo(postData map[string]any) (any, error) {
 	title := postData["title"].(string)
 	newTodo := Todo{
 		ID:    len(todos) + 1,

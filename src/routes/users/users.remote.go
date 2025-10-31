@@ -1,6 +1,6 @@
-package routes
+package users
 
-func queryUserInfo() (any, error) {
+func QueryUserInfo() (any, error) {
 	return map[string]any{
 		"id":       1,
 		"username": "myuser",

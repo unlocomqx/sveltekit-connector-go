@@ -50,9 +50,9 @@ function transform_code(code, file_path, config, options) {
 			const name = function_name_node ? function_name_node.text : 'unknown';
 			if (name) {
 				let type = '';
-				if (name.startsWith('query')) type = 'query';
-				else if (name.startsWith('form')) type = 'form';
-				else if (name.startsWith('command')) type = 'command';
+				if (name.startsWith('Query')) type = 'query';
+				else if (name.startsWith('Form')) type = 'form';
+				else if (name.startsWith('Command')) type = 'command';
 
 				if (type) {
 					remote_functions.push({
