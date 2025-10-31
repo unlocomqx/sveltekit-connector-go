@@ -8,14 +8,26 @@ functions.
 ```shell
 bun install
 bun run go ;start go server
-bun run dev 
+bun run dev
 ```
 
 ## Conventions
 
-Prefix your go function with `query`, `form`, or `command` to indicate its type. For example:- `queryTodos`
+Prefix your go function with `Query`, `Form`, or `Command` to indicate its type. For example:- `QueryTodos`
 
-- `formCreateTodo`
-- `commandDeleteTodo`
-- `queryTodoByID`
-- `commandUpdateTodo`
+- `FormCreateTodo`
+- `CommandDeleteTodo`
+- `QueryTodoByID`
+- `CommandUpdateTodo`
+
+## Contributing
+
+This is a POC, feel free to contribute to make it better.
+
+## Todos
+
+- [ ] Handle function parameters
+- [ ] Generate registry.go automatically or implement dynamic imports somehow
+- [ ] Fix types for "virtual" js module
+- [ ] Improve Go server structure
+- [ ] Improve error handling
