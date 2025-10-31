@@ -21,3 +21,7 @@
 		<button type="submit">Add</button>
 	</form>
 </div>
+
+<p>
+	<a href="/users">Users</a>
+</p>

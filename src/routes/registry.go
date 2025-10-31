@@ -10,4 +10,7 @@ var FunctionRegistry = map[string]any{
 	"src/routes/todos.remote.go:formCreateTodo": func(postData map[string]any) (any, error) {
 		return formCreateTodo(postData)
 	},
+	"src/routes/users/user.remote.go:queryUserInfo": func(postData map[string]any) (any, error) {
+		return fetchUserInfo(postData)
+	},
 }
