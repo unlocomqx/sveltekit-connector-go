@@ -1,6 +1,6 @@
 <script lang="ts">
 	// still can't get .d.ts to work
-	import { FormCreateTodo, QueryTodos } from './todos.remote.go';
+	import { FormCreateTodo, QueryTodos, FormDeleteTodo } from './todos.remote.go';
 </script>
 
 <h1>SvelteKit Connector for Go</h1>
@@ -9,9 +9,12 @@
 <div>
 	<h2>Todos list:</h2>
 	{#each await QueryTodos() as { id, title } (id)}
-		<div>
-			<p>{title}</p>
-		</div>
+		<form {...FormDeleteTodo.for(id)}>
+			<span>{title}</span>
+			<button>Delete</button>
+			<br />
+			<br />
+		</form>
 	{/each}
 
 	<form method="post" {...FormCreateTodo}>

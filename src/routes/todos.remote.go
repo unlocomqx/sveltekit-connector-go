@@ -24,3 +24,14 @@ func FormCreateTodo(postData map[string]any) (any, error) {
 	todos = append(todos, newTodo)
 	return todos, nil
 }
+
+func FormDeleteTodo(postData map[string]any) (any, error) {
+	id := postData["id"].(int)
+	for i, todo := range todos {
+		if todo.ID == id {
+			todos = append(todos[:i], todos[i+1:]...)
+			return todos, nil
+		}
+	}
+	return todos, nil
+}

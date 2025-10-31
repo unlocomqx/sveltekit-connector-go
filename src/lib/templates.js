@@ -11,7 +11,7 @@ export const _name_ = query(() =>{
 `;
 
 export const formFn = `export const _name_ = form(null, (data) => {
-  console.log(data);
+  console.log(data)
 	return fetch('_endpoint_/_path_?fn=_name_', {
 		method: 'POST',
 		headers: {
