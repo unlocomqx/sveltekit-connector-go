@@ -15,15 +15,6 @@ func queryTodos() []Todo {
 	return todos
 }
 
-func queryTodoByID(id int) *Todo {
-	for i := range todos {
-		if todos[i].ID == id {
-			return &todos[i]
-		}
-	}
-	return nil
-}
-
 func formCreateTodo(title string) []Todo {
 	newTodo := Todo{
 		ID:    len(todos) + 1,
