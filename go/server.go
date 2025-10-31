@@ -33,6 +33,11 @@ func main() {
 		fn := c.Query("fn")
 		fullPath := filepath.Join(BASE_PATH, path)
 
+		var postData []byte
+		if c.Method() == "POST" {
+			postData = c.Body()
+		}
+
 		if !strings.HasSuffix(path, ".remote.go") {
 			return c.Status(400).SendString("Invalid file type")
 		}
@@ -45,7 +50,7 @@ func main() {
 			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
-		result, err := executeRemoteFunction(fullPath, fn)
+		result, err := executeRemoteFunction(fullPath, fn, postData)
 		if err != nil {
 			return c.Status(500).SendString(fmt.Sprintf("Error executing function: %v", err))
 		}
