@@ -48,6 +48,7 @@ func main() {
 			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
+		// Call src/routes/todos.remote.go:queryTodos, see src/routes/registry.go
 		result, err := executeRemoteFunction(path, fn, postData)
 		if err != nil {
 			log.Printf("Error executing function: %v", err)
