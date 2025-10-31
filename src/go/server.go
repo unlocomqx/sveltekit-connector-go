@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,7 @@ import (
 const BASE_PATH = "../"
 
 func main() {
+	fmt.Println("Starting server...")
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -42,6 +44,8 @@ func main() {
 			return c.Status(400).SendString("Invalid file type")
 		}
 
+		fmt.Println(fullPath)
+
 		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 			return c.Status(404).SendString("File not found")
 		}
@@ -59,5 +63,8 @@ func main() {
 		return c.Send(result)
 	})
 
-	app.Listen(":9999")
+	fmt.Println("Listening on :9999")
+	if err := app.Listen(":9999"); err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
 }
