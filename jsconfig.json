@@ -12,5 +12,6 @@
 		"moduleResolution": "bundler",
 		"typeRoots": ["dist/src/routes/"],
 		"types": ["dist/src/routes/todos.remote.d.ts"]
-	}
+	},
+	"include": ["dist/src/routes/**/*.remote.d.ts"]
 }
