@@ -54,7 +54,8 @@ function transform_code(code, file_path, config, options) {
 		}
 	}
 
-	emit_remote_functions({ config, file_path, remote_functions, options });
+	const {code} = emit_remote_functions({ config, file_path, remote_functions, options });
+	return code;
 }
 
 /**
@@ -110,6 +111,8 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 		${dts_code.map((line) => '\t' + line).join('\n')}
 	}`;
 	fs.writeFileSync(dts_path, dts_module);
+
+	return {code:js_code_with_imports};
 }
 
 /**
@@ -118,12 +121,15 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
  * @returns {import('vite').Plugin} Vite plugin instance
  */
 export const gokit = function (options = {}) {
+	/** @type {import('vite').ResolvedConfig} */
+	let cfg;
 	const module_regex = /\.remote\.go$/;
 
 	return {
 		name: 'vite-plugin-gokit',
 
 		configResolved(config) {
+			cfg = config;
 			const remote_go_files = fg.sync('**/*.remote.go', { cwd: config.root });
 			remote_go_files.forEach((file) => {
 				const file_path = path.join(config.root, file);
@@ -134,7 +140,7 @@ export const gokit = function (options = {}) {
 
 		transform(src, id) {
 			if (module_regex.test(id)) {
-				//
+				return transform_code(src, id, cfg, options);
 			}
 		}
 	};
