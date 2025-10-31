@@ -60,13 +60,7 @@ func main() {
 			{ID: 3, Title: "Finish project", Completed: false},
 		}
 
-		response := map[string]interface{}{
-			"path":  path,
-			"fn":    fn,
-			"todos": todos,
-		}
-
-		jsonData, err := json.Marshal(response)
+		jsonData, err := json.Marshal(todos)
 		if err != nil {
 			return c.Status(500).SendString("Error encoding JSON")
 		}
