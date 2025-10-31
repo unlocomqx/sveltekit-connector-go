@@ -69,13 +69,12 @@ function transform_code(code, file_path, config, options) {
  * @param {GoKitOptions} params.options - Configuration options for the Go connector
  */
 function emit_remote_functions({ config, file_path, remote_functions, options }) {
-	// console.log(`Remote functions in ${file_path}:`, remote_functions);
+	console.log(`Remote functions in ${file_path}:`, remote_functions);
 	const js_path = path.join(
 		config.root,
 		sveltekit_dir,
 		path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.js')
 	);
-	console.log({ js_path });
 	const dts_path = path.join(
 		config.root,
 		sveltekit_dir,

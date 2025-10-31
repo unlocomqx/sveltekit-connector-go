@@ -1,6 +1,7 @@
 # SvelteKit Connector for Go
 
-This is a proof of concept showing how it can be possible to connect a SvelteKit frontend to a Go backend using remote functions.
+This is a proof of concept showing how it can be possible to connect a SvelteKit frontend to a Go backend using remote
+functions.
 
 ## Usage
 
@@ -9,3 +10,12 @@ bun install
 bun run go ;start go server
 bun run dev 
 ```
+
+## Conventions
+
+Prefix your go function with `query`, `form`, or `command` to indicate its type. For example:- `queryTodos`
+
+- `formCreateTodo`
+- `commandDeleteTodo`
+- `queryTodoByID`
+- `commandUpdateTodo`

@@ -27,7 +27,7 @@ func main() {
 	})
 	app.Post("/rpc", func(c *fiber.Ctx) error {
 		// Get raw body from POST request:
-		return c.SendString("OK") // []byte("user=john")
+		return c.SendString(`{"status": "OK"}`) // []byte("user=john")
 	})
 
 	app.Listen(":9999")
