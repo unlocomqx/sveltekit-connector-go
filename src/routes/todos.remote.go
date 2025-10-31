@@ -11,15 +11,16 @@ var todos = []Todo{
 	{ID: 3, Title: "Todo 3"},
 }
 
-func queryTodos(postData []byte) []Todo {
-	return todos
+func queryTodos(postData map[string]any) (any, error) {
+	return todos, nil
 }
 
-func formCreateTodo(title string) []Todo {
+func formCreateTodo(postData map[string]any) (any, error) {
+	title := postData["title"].(string)
 	newTodo := Todo{
 		ID:    len(todos) + 1,
 		Title: title,
 	}
 	todos = append(todos, newTodo)
-	return todos
+	return todos, nil
 }

@@ -30,9 +30,12 @@ func main() {
 		path := c.Params("*")
 		fn := c.Query("fn")
 
-		var postData []byte
-		if c.Method() == "POST" {
-			postData = c.Body()
+		postData := make(map[string]any)
+		if c.Method() == "POST" && len(c.Body()) > 0 {
+			if err := c.BodyParser(&postData); err != nil {
+				log.Printf("Error parsing request body: %v", err)
+				return c.Status(400).SendString(fmt.Sprintf("Error parsing request body: %v", err))
+			}
 		}
 
 		if !strings.HasSuffix(path, ".remote.go") {
@@ -45,12 +48,7 @@ func main() {
 			return c.Status(400).SendString("Function name (fn) is required")
 		}
 
-		result, err := executeRemoteFunction(path, fn, postData)
-		if err != nil {
-			log.Printf("Error executing function: %v", err)
-			return c.Status(500).SendString(fmt.Sprintf("Error executing function: %v", err))
-		}
-
+		result := executeRemoteFunction(path, fn, postData)
 		c.Set("Content-Type", "application/json")
 		return c.Send(result)
 	})

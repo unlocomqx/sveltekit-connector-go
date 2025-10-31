@@ -1,23 +1,14 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"gokit/routes"
 )
 
-func executeRemoteFunction(path string, functionName string, postData []byte) ([]byte, error) {
+func executeRemoteFunction(path string, functionName string, postData map[string]any) any {
 	registryKey := path + ":" + functionName
 	fn, exists := routes.FunctionRegistry[registryKey]
 	if !exists {
-		return nil, fmt.Errorf("function %s not found in registry", registryKey)
+		return nil
 	}
-
-	result, err := fn.(func([]byte) (any, error))(postData)
-	if err != nil {
-		return nil, err
-	}
-
-	return json.Marshal(result)
+	return fn.(func(map[string]any) any)(postData)
 }
