@@ -38,6 +38,8 @@ func main() {
 			}
 		}
 
+		log.Printf("POST data: %v", postData)
+
 		if !strings.HasSuffix(path, ".remote.go") {
 			log.Printf("Invalid file type")
 			return c.Status(400).SendString("Invalid file type")

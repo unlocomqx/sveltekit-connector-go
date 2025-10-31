@@ -16,7 +16,7 @@
 		<p>{title}</p>
 	{/each}
 
-	<form {...FormCreateTodo}>
+	<form method="post" {...FormCreateTodo}>
 		<input name="title" type="text" value="New todo" />
 		<button type="submit">Add</button>
 	</form>
