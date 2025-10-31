@@ -94,7 +94,7 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 		const relative_path = path.relative(config.root, file_path);
 		if (remote_fn.type === 'query') {
 			return queryFn
-				.replace('_name_', remote_fn.name)
+				.replace(/_name_/g, remote_fn.name)
 				.replace('_endpoint_', options.endpoint.replace(/\/$/, '') || '')
 				.replace('_path_', relative_path);
 		}

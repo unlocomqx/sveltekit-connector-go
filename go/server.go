@@ -37,8 +37,10 @@ func main() {
 
 	app.Get("/rpc/*", func(c *fiber.Ctx) error {
 		path := c.Params("*")
+		fn := c.Query("fn")
 		fullPath := filepath.Join(BASE_PATH, path)
 		fmt.Println("RPC path:", path)
+		fmt.Println("Function:", fn)
 		fmt.Println("Full path:", fullPath)
 
 		if !strings.HasSuffix(path, ".remote.go") {
@@ -60,6 +62,7 @@ func main() {
 
 		response := map[string]interface{}{
 			"path":  path,
+			"fn":    fn,
 			"todos": todos,
 		}
 
