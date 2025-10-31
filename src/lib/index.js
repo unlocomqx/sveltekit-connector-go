@@ -5,6 +5,8 @@ import path from 'node:path';
 import * as fs from 'node:fs';
 import { dtsCommandFn, dtsFormFn, dtsQueryFn, imports, queryFn } from './templates.js';
 
+const sveltekit_dir = '.svelte-kit';
+
 const parser = new Parser();
 parser.setLanguage(goLang);
 
@@ -54,7 +56,7 @@ function transform_code(code, file_path, config, options) {
 		}
 	}
 
-	const {code: js_code} = emit_remote_functions({ config, file_path, remote_functions, options });
+	const { code: js_code } = emit_remote_functions({ config, file_path, remote_functions, options });
 	return js_code;
 }
 
@@ -67,13 +69,16 @@ function transform_code(code, file_path, config, options) {
  * @param {GoKitOptions} params.options - Configuration options for the Go connector
  */
 function emit_remote_functions({ config, file_path, remote_functions, options }) {
-	console.log(`Remote functions in ${file_path}:`, remote_functions);
+	// console.log(`Remote functions in ${file_path}:`, remote_functions);
 	const js_path = path.join(
-		config.build.outDir,
+		config.root,
+		sveltekit_dir,
 		path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.js')
 	);
+	console.log({ js_path });
 	const dts_path = path.join(
-		config.build.outDir,
+		config.root,
+		sveltekit_dir,
 		path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.d.ts')
 	);
 	fs.mkdirSync(path.dirname(dts_path), { recursive: true });
@@ -112,7 +117,7 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 	}`;
 	fs.writeFileSync(dts_path, dts_module);
 
-	return {code:js_code_with_imports, path: js_path};
+	return { code: js_code_with_imports, path: js_path };
 }
 
 /**
@@ -127,6 +132,7 @@ export const gokit = function (options = {}) {
 
 	return {
 		name: 'vite-plugin-gokit',
+		enforce: 'pre',
 
 		configResolved(config) {
 			cfg = config;
@@ -138,26 +144,18 @@ export const gokit = function (options = {}) {
 			});
 		},
 
-		resolveId(id) {
-			console.log('resolveId:', id);
-			if (module_regex.test(id)) {
-				// console.log({id});
+		async resolveId(source, importer) {
+			// redirect the .go import to the generated .js file
+			if (source.endsWith('.go')) {
+				const full_path = path.resolve(path.dirname(importer), source.replace(/\.go$/, '.js'));
+				const js_path = path.join(cfg.root, sveltekit_dir, path.relative(cfg.root, full_path));
+				return this.resolve(js_path, importer, { skipSelf: true })
 			}
-		},
-
-		renderDynamicImport(id){
-
 		},
 
 		transform(src, id) {
 			if (module_regex.test(id)) {
 				return transform_code(src, id, cfg, options);
-			}
-		},
-
-		load(id) {
-			if(module_regex.test(id)) {
-				console.log({id});
 			}
 		}
 	};
