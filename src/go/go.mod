@@ -3,9 +3,12 @@ module gokit/rpc
 go 1.25.3
 
 require (
-	routes v0.0.0 // indirect
+	github.com/gofiber/fiber/v2 v2.52.9
+	gokit/routes v0.0.0
+)
+
+require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/gofiber/fiber/v2 v2.52.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -17,3 +20,5 @@ require (
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 )
+
+replace gokit/routes => ../routes

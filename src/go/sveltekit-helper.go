@@ -1,91 +1,47 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
+	"reflect"
+
+	"gokit/routes"
 )
 
 func executeRemoteFunction(filePath string, functionName string, postData []byte) ([]byte, error) {
-	fileContent, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, err
+	fn, exists := routes.FunctionRegistry[functionName]
+	if !exists {
+		return nil, fmt.Errorf("function %s not found in registry", functionName)
 	}
 
-	contentStr := string(fileContent)
-	contentStr = strings.Replace(contentStr, "package main", "", 1)
+	fnValue := reflect.ValueOf(fn)
+	fnType := fnValue.Type()
 
-	hasPostData := len(postData) > 0
+	var results []reflect.Value
 
-	var wrapperCode string
-	if hasPostData {
-		wrapperCode = fmt.Sprintf(`package main
-
-import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"os"
-)
-
-%s
-
-func main() {
-	postData, _ := io.ReadAll(os.Stdin)
-	result := %s(postData)
-	jsonData, err := json.Marshal(result)
-	if err != nil {
-		return
-	}
-	fmt.Print(string(jsonData))
-}
-`, contentStr, functionName)
-	} else {
-		wrapperCode = fmt.Sprintf(`package main
-
-import (
-	"encoding/json"
-	"fmt"
-)
-
-%s
-
-func main() {
-	result := %s()
-	jsonData, err := json.Marshal(result)
-	if err != nil {
-		return
-	}
-	fmt.Print(string(jsonData))
-}
-`, contentStr, functionName)
-	}
-
-	wrapperPath := filepath.Join("tmp", "wrapper.go")
-	err = os.WriteFile(wrapperPath, []byte(wrapperCode), 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	cmd := exec.Command("go", "run", wrapperPath)
-
-	if len(postData) > 0 {
-		stdin, err := cmd.StdinPipe()
-		if err != nil {
-			return nil, err
+	if fnType.NumIn() == 0 {
+		results = fnValue.Call([]reflect.Value{})
+	} else if fnType.NumIn() == 1 {
+		if len(postData) == 0 {
+			return nil, fmt.Errorf("function %s requires parameters but none provided", functionName)
 		}
-		go func() {
-			defer stdin.Close()
-			stdin.Write(postData)
-		}()
+
+		paramType := fnType.In(0)
+		paramValue := reflect.New(paramType)
+
+		if err := json.Unmarshal(postData, paramValue.Interface()); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal parameters: %w", err)
+		}
+
+		results = fnValue.Call([]reflect.Value{paramValue.Elem()})
+	} else {
+		return nil, fmt.Errorf("function %s has unsupported number of parameters", functionName)
 	}
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("execution error: %s", string(output))
+	if len(results) == 0 {
+		return json.Marshal(nil)
 	}
 
-	return []byte(strings.TrimSpace(string(output))), nil
+	result := results[0].Interface()
+	return json.Marshal(result)
 }
