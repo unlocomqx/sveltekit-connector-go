@@ -10,6 +10,28 @@ export const _name_ = query(() =>{
 });
 `;
 
+export const formFn = `export const _name_ = form((data) =>{
+	return fetch('_endpoint_/_path_', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data)
+	}).then(res => res.json());
+});
+`;
+
+export const commandFn = `export const _name_ = command((data) =>{
+	return fetch('_endpoint_/_path_', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data)
+	}).then(res => res.json());
+});
+`;
+
 export const dtsQueryFn = `export const _name_: query<any>;`;
 
 export const dtsFormFn = `export const _name_: form<any>;`;

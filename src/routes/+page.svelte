@@ -1,6 +1,6 @@
 <script lang="ts">
 	// still can't get .d.ts to work
-	import { formUpdateTodo, queryTodos } from './todos.remote.go';
+	import { formCreateTodo, queryTodos } from './todos.remote.go';
 
 	let todos = $state(await queryTodos());
 </script>
@@ -13,10 +13,11 @@
 <div>
 	<h2>Todos list:</h2>
 	{#each todos as { id, title } (id)}
-		<form {...formUpdateTodo}>
-			<input name="" type="text" value={title}>
-			<button type="submit">Update</button>
-		</form>
-		<br>
+		<p>{title}</p>
 	{/each}
+
+	<form {...formCreateTodo}>
+		<input name="title" type="text" value="New todo" />
+		<button type="submit">Add</button>
+	</form>
 </div>

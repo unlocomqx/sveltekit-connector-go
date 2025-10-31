@@ -1,9 +1,17 @@
 import fg from 'fast-glob';
+import * as fs from 'node:fs';
+import path from 'node:path';
 import Parser from 'tree-sitter';
 import goLang from 'tree-sitter-go';
-import path from 'node:path';
-import * as fs from 'node:fs';
-import { dtsCommandFn, dtsFormFn, dtsQueryFn, imports, queryFn } from './templates.js';
+import {
+	dtsCommandFn,
+	dtsFormFn,
+	dtsQueryFn,
+	formFn,
+	imports,
+	queryFn,
+	commandFn
+} from './templates.js';
 
 const sveltekit_dir = '.svelte-kit';
 
@@ -90,6 +98,18 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 				.replace('_endpoint_', options.endpoint.replace(/\/$/, '') || '')
 				.replace('_path_', relative_path);
 		}
+		if (remote_fn.type === 'form') {
+			return formFn
+				.replace('_name_', remote_fn.name)
+				.replace('_endpoint_', options.endpoint.replace(/\/$/, '') || '')
+				.replace('_path_', relative_path);
+		}
+		if (remote_fn.type === 'command') {
+			return commandFn
+				.replace('_name_', remote_fn.name)
+				.replace('_endpoint_', options.endpoint.replace(/\/$/, '') || '')
+				.replace('_path_', relative_path);
+		}
 		return '';
 	});
 
@@ -148,7 +168,7 @@ export const gokit = function (options = {}) {
 			if (source.endsWith('.go')) {
 				const full_path = path.resolve(path.dirname(importer), source.replace(/\.go$/, '.js'));
 				const js_path = path.join(cfg.root, sveltekit_dir, path.relative(cfg.root, full_path));
-				return this.resolve(js_path, importer, { skipSelf: true })
+				return this.resolve(js_path, importer, { skipSelf: true });
 			}
 		},
 
