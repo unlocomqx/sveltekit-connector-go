@@ -54,8 +54,8 @@ function transform_code(code, file_path, config, options) {
 		}
 	}
 
-	const {code} = emit_remote_functions({ config, file_path, remote_functions, options });
-	return code;
+	const {code: js_code} = emit_remote_functions({ config, file_path, remote_functions, options });
+	return js_code;
 }
 
 /**
@@ -112,7 +112,7 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 	}`;
 	fs.writeFileSync(dts_path, dts_module);
 
-	return {code:js_code_with_imports};
+	return {code:js_code_with_imports, path: js_path};
 }
 
 /**
@@ -138,9 +138,26 @@ export const gokit = function (options = {}) {
 			});
 		},
 
+		resolveId(id) {
+			console.log('resolveId:', id);
+			if (module_regex.test(id)) {
+				// console.log({id});
+			}
+		},
+
+		renderDynamicImport(id){
+
+		},
+
 		transform(src, id) {
 			if (module_regex.test(id)) {
 				return transform_code(src, id, cfg, options);
+			}
+		},
+
+		load(id) {
+			if(module_regex.test(id)) {
+				console.log({id});
 			}
 		}
 	};
