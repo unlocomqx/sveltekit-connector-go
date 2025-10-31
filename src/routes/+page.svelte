@@ -1,4 +1,5 @@
 <script lang="ts">
+	// still can't get .d.ts to work
 	import { queryTodos } from './todos.remote.go';
 
 	let todos = $state([]);
