@@ -3,7 +3,7 @@ import Parser from 'tree-sitter';
 import goLang from 'tree-sitter-go';
 import path from 'node:path';
 import * as fs from 'node:fs';
-import { imports, queryFn, dtsQueryFn, dtsFormFn, dtsCommandFn } from './templates.js';
+import { dtsCommandFn, dtsFormFn, dtsQueryFn, imports, queryFn } from './templates.js';
 
 const parser = new Parser();
 parser.setLanguage(goLang);
@@ -69,7 +69,10 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 	console.log(`Remote functions in ${file_path}:`, remote_functions);
 	const base_path = path.join(path.dirname(file_path), path.basename(file_path, '.go'));
 	const js_path = base_path + '.js';
-	const dts_path = path.join(config.build.outDir, path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.d.ts'));
+	const dts_path = path.join(
+		config.build.outDir,
+		path.relative(config.root, file_path).replace(/\\/g, '/').replace(/\.go$/, '.d.ts')
+	);
 	fs.mkdirSync(path.dirname(dts_path), { recursive: true });
 
 	const js_code = remote_functions.map((remote_fn) => {
@@ -102,7 +105,7 @@ function emit_remote_functions({ config, file_path, remote_functions, options })
 
 	const dts_module = `declare module '${file_path}' {
 		${imports_code}
-		${dts_code.map(line => '\t' + line).join('\n')}
+		${dts_code.map((line) => '\t' + line).join('\n')}
 	}`;
 	fs.writeFileSync(dts_path, dts_module);
 }
